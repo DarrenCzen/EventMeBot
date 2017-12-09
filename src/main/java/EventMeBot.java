@@ -36,7 +36,7 @@ public class EventMeBot extends TelegramLongPollingBot{
                 // User send /attending
                 SendMessage message = new SendMessage() // Create a message object object
                         .setChatId(chat_id)
-                        .setText(username);
+                        .setText(mainAttendees + username);
                 try {
                     execute(message); // Sending our message object to user
                 } catch (TelegramApiException e) {
