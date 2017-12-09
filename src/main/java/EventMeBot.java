@@ -5,6 +5,14 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class EventMeBot extends TelegramLongPollingBot{
 
+    public static String mainEvent = "Event Name: \n";
+    public static String mainLocation = "Location: \n";
+    public static String mainDate = "Date: \n";
+    public static String mainTime = "Time: \n";
+    public static String mainAttendees = "Attending:\n \n";
+    public static String mainMaybes = "Maybe Attending:\n \n";
+    public static String mainNonAttendees = "Not Attending:\n \n";
+
     public void onUpdateReceived(Update update) {
 
         // We check if the update has a message and the message has text
@@ -12,14 +20,38 @@ public class EventMeBot extends TelegramLongPollingBot{
             // Set variables
             String message_text = update.getMessage().getText();
             long chat_id = update.getMessage().getChatId();
+            String username = update.getMessage().getFrom().getUserName();
 
-            SendMessage message = new SendMessage() // Create a message object object
-                    .setChatId(chat_id)
-                    .setText(message_text);
-            try {
-                execute(message); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+            if (message_text.equals("/start")) {
+                // User send /start
+                SendMessage message = new SendMessage() // Create a message object object
+                        .setChatId(chat_id)
+                        .setText(message_text);
+                try {
+                    execute(message); // Sending our message object to user
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else if (message_text.equals("/attending")) {
+                // User send /attending
+                SendMessage message = new SendMessage() // Create a message object object
+                        .setChatId(chat_id)
+                        .setText(username);
+                try {
+                    execute(message); // Sending our message object to user
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // Unknown command
+                SendMessage message = new SendMessage() // Create a message object object
+                        .setChatId(chat_id)
+                        .setText("Unknown command");
+                try {
+                    execute(message); // Sending our message object to user
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
