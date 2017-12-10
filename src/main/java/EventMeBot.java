@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -5,13 +7,11 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class EventMeBot extends TelegramLongPollingBot{
 
-    public static String mainEvent = "Event Name: \n";
-    public static String mainLocation = "Location: \n";
-    public static String mainDate = "Date: \n";
-    public static String mainTime = "Time: \n";
-    public static String mainAttendees = "Attending:\n \n";
-    public static String mainMaybes = "Maybe Attending:\n \n";
-    public static String mainNonAttendees = "Not Attending:\n \n";
+    ArrayList<String> attendees = new ArrayList<String>();
+    ArrayList<String> maybeAttendees = new ArrayList<String>();
+    ArrayList<String> nonAttendees = new ArrayList<String>();
+    public static String eventName = "";
+
 
     public void onUpdateReceived(Update update) {
 
@@ -22,21 +22,57 @@ public class EventMeBot extends TelegramLongPollingBot{
             long chat_id = update.getMessage().getChatId();
             String username = update.getMessage().getFrom().getUserName();
 
-            if (message_text.equals("/start")) {
-                // User send /start
-                SendMessage message = new SendMessage() // Create a message object object
-                        .setChatId(chat_id)
-                        .setText(message_text);
-                try {
-                    execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+            if (message_text.startsWith("/create")) {
+                if (eventName.equals("")) {
+                    // User send /create
+                    eventName = message_text.substring(8);
+
+                    SendMessage message = new SendMessage() // Create a message object object
+                            .setChatId(chat_id)
+                            .setText(FormatPrinter.eventLister(eventName));
+                    try {
+                        execute(message); // Sending our message object to user
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    SendMessage message = new SendMessage() // Create a message object object
+                            .setChatId(chat_id)
+                            .setText("Event is already created.");
+                    try {
+                        execute(message); // Sending our message object to user
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (message_text.equals("/clear")) {
+                if (!eventName.equals("")) {
+                    // User send /clear
+                    eventName = "";
+
+                    SendMessage message = new SendMessage() // Create a message object object
+                            .setChatId(chat_id)
+                            .setText("Event has been cleared.");
+                    try {
+                        execute(message); // Sending our message object to user
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    SendMessage message = new SendMessage() // Create a message object object
+                            .setChatId(chat_id)
+                            .setText("Event not created yet.");
+                    try {
+                        execute(message); // Sending our message object to user
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else if (message_text.equals("/attending")) {
                 // User send /attending
                 SendMessage message = new SendMessage() // Create a message object object
                         .setChatId(chat_id)
-                        .setText(mainAttendees + username);
+                        .setText(username);
                 try {
                     execute(message); // Sending our message object to user
                 } catch (TelegramApiException e) {
