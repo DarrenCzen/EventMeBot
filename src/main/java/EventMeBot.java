@@ -12,7 +12,6 @@ public class EventMeBot extends TelegramLongPollingBot{
     ArrayList<String> nonAttendees = new ArrayList<String>();
     public static String eventName = "";
 
-
     public void onUpdateReceived(Update update) {
 
         // We check if the update has a message and the message has text
@@ -23,11 +22,13 @@ public class EventMeBot extends TelegramLongPollingBot{
             String username = update.getMessage().getFrom().getUserName();
 
             if (message_text.startsWith("/create")) {
-                if (eventName.equals("")) {
-                    // User send /create
+                if (eventName.equals("") && !message_text.substring(8).equals("")) {
                     eventName = message_text.substring(8);
 
-                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.eventLister(eventName));
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.eventCreator(eventName));
+                    executeMessage(message);
+                } else if (eventName.equals("") && message_text.substring(8).equals("")) {
+                    SendMessage message = createNewSendMessage(chat_id, "Event is not being written in /create.\n E.g. /create Event Name");
                     executeMessage(message);
                 } else {
                     SendMessage message = createNewSendMessage(chat_id, "Event is already created.");
@@ -35,17 +36,15 @@ public class EventMeBot extends TelegramLongPollingBot{
                 }
             } else if (message_text.equals("/clear")) {
                 if (!eventName.equals("")) {
-                    // User send /clear
                     eventName = "";
 
                     SendMessage message = createNewSendMessage(chat_id, "Event has been cleared.");
                     executeMessage(message);
                 } else {
-                    SendMessage message = createNewSendMessage(chat_id, "Event not created yet.");
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
                     executeMessage(message);
                 }
             } else if (message_text.equals("/attending")) {
-                // User send /attending
                 SendMessage message = createNewSendMessage(chat_id, username);
                 executeMessage(message);
             } else {
