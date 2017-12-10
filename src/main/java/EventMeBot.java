@@ -28,7 +28,8 @@ public class EventMeBot extends TelegramLongPollingBot{
                     SendMessage message = createNewSendMessage(chat_id, FormatPrinter.eventCreator(eventName));
                     executeMessage(message);
                 } else if (eventName.equals("") && message_text.substring(8).equals("")) {
-                    SendMessage message = createNewSendMessage(chat_id, "Event is not being written in /create.\n E.g. /create Event Name");
+                    SendMessage message = createNewSendMessage(chat_id, "Event is not being written in "
+                            + "/create.\n E.g. /create Event Name");
                     executeMessage(message);
                 } else {
                     SendMessage message = createNewSendMessage(chat_id, "Event is already created.");
@@ -45,8 +46,47 @@ public class EventMeBot extends TelegramLongPollingBot{
                     executeMessage(message);
                 }
             } else if (message_text.equals("/attending")) {
-                SendMessage message = createNewSendMessage(chat_id, username);
-                executeMessage(message);
+                if (!eventName.equals("")) {
+                    if (!attendees.contains(username)) {
+                        attendees.add(username);
+                        nonAttendees.remove(username);
+                        maybeAttendees.remove(username);
+                    }
+                    String listedString = FormatPrinter.eventLister(eventName, attendees, maybeAttendees, nonAttendees);
+                    SendMessage message = createNewSendMessage(chat_id, listedString);
+                    executeMessage(message);
+                } else {
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
+                    executeMessage(message);
+                }
+            } else if (message_text.equals("/notattending")) {
+                if (!eventName.equals("")) {
+                    if (!nonAttendees.contains(username)) {
+                        attendees.remove(username);
+                        nonAttendees.add(username);
+                        maybeAttendees.remove(username);
+                    }
+                    String listedString = FormatPrinter.eventLister(eventName, attendees, maybeAttendees, nonAttendees);
+                    SendMessage message = createNewSendMessage(chat_id, listedString);
+                    executeMessage(message);
+                } else {
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
+                    executeMessage(message);
+                }
+            } else if (message_text.equals("/maybeattending")) {
+                if (!eventName.equals("")) {
+                    if (!maybeAttendees.contains(username)) {
+                        attendees.remove(username);
+                        nonAttendees.remove(username);
+                        maybeAttendees.add(username);
+                    }
+                    String listedString = FormatPrinter.eventLister(eventName, attendees, maybeAttendees, nonAttendees);
+                    SendMessage message = createNewSendMessage(chat_id, listedString);
+                    executeMessage(message);
+                } else {
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
+                    executeMessage(message);
+                }
             } else {
                 // Unknown command
                 SendMessage message = createNewSendMessage(chat_id, "Unknown Command");
