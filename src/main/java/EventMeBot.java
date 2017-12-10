@@ -27,74 +27,62 @@ public class EventMeBot extends TelegramLongPollingBot{
                     // User send /create
                     eventName = message_text.substring(8);
 
-                    SendMessage message = new SendMessage() // Create a message object object
-                            .setChatId(chat_id)
-                            .setText(FormatPrinter.eventLister(eventName));
-                    try {
-                        execute(message); // Sending our message object to user
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.eventLister(eventName));
+                    executeMessage(message);
                 } else {
-                    SendMessage message = new SendMessage() // Create a message object object
-                            .setChatId(chat_id)
-                            .setText("Event is already created.");
-                    try {
-                        execute(message); // Sending our message object to user
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+                    SendMessage message = createNewSendMessage(chat_id, "Event is already created.");
+                    executeMessage(message);
                 }
             } else if (message_text.equals("/clear")) {
                 if (!eventName.equals("")) {
                     // User send /clear
                     eventName = "";
 
-                    SendMessage message = new SendMessage() // Create a message object object
-                            .setChatId(chat_id)
-                            .setText("Event has been cleared.");
-                    try {
-                        execute(message); // Sending our message object to user
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+                    SendMessage message = createNewSendMessage(chat_id, "Event has been cleared.");
+                    executeMessage(message);
                 } else {
-                    SendMessage message = new SendMessage() // Create a message object object
-                            .setChatId(chat_id)
-                            .setText("Event not created yet.");
-                    try {
-                        execute(message); // Sending our message object to user
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
+                    SendMessage message = createNewSendMessage(chat_id, "Event not created yet.");
+                    executeMessage(message);
                 }
             } else if (message_text.equals("/attending")) {
                 // User send /attending
-                SendMessage message = new SendMessage() // Create a message object object
-                        .setChatId(chat_id)
-                        .setText(username);
-                try {
-                    execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                SendMessage message = createNewSendMessage(chat_id, username);
+                executeMessage(message);
             } else {
                 // Unknown command
-                SendMessage message = new SendMessage() // Create a message object object
-                        .setChatId(chat_id)
-                        .setText("Unknown command");
-                try {
-                    execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                SendMessage message = createNewSendMessage(chat_id, "Unknown Command");
+                executeMessage(message);
             }
         }
     }
 
+    /**
+     * Returns Bot Username
+     * @return String
+     */
+    public SendMessage createNewSendMessage(long chat_id, String textMessage) {
+        // Create a message object object
+        return new SendMessage() // Create a message object object
+                .setChatId(chat_id)
+                .setText(textMessage);
+    }
+
+    /**
+     * Executes message sent to bot.
+     */
+    private void executeMessage(SendMessage message) {
+        try {
+            execute(message); // Sending our message object to user
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Returns Bot Username
+     * @return String
+     */
     public String getBotUsername() {
-        // TODO
-        // Return bot username
         return "EventMeBot";
     }
 
