@@ -28,7 +28,7 @@ public class EventMeBot extends TelegramLongPollingBot{
                     SendMessage message = createNewSendMessage(chat_id, FormatPrinter.eventCreator(eventName));
                     executeMessage(message);
                 } else if (eventName.equals("") && message_text.substring(8).equals("")) {
-                    SendMessage message = createNewSendMessage(chat_id, "Event is not being written in "
+                    SendMessage message = createNewSendMessage(chat_id, "Event is not written properly for "
                             + "/create.\n E.g. /create Event Name");
                     executeMessage(message);
                 } else {
@@ -38,14 +38,26 @@ public class EventMeBot extends TelegramLongPollingBot{
             } else if (message_text.equals("/clear")) {
                 if (!eventName.equals("")) {
                     eventName = "";
-
+                    attendees.clear();
+                    nonAttendees.clear();
+                    maybeAttendees.clear();
                     SendMessage message = createNewSendMessage(chat_id, "Event has been cleared.");
                     executeMessage(message);
                 } else {
                     SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
                     executeMessage(message);
                 }
-            } else if (message_text.equals("/attending")) {
+            } else if (message_text.equals("/list")) {
+                if (!eventName.equals("")) {
+                    String listedString = FormatPrinter.eventCreator(eventName) + "\n"
+                            + FormatPrinter.eventLister(eventName, attendees, maybeAttendees, nonAttendees);
+                    SendMessage message = createNewSendMessage(chat_id, listedString);
+                    executeMessage(message);
+                } else {
+                    SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
+                    executeMessage(message);
+                }
+            } else if (message_text.equals("/attending") || message_text.equals("/attending@EventMeBot")) {
                 if (!eventName.equals("")) {
                     if (!attendees.contains(username)) {
                         attendees.add(username);
@@ -59,7 +71,7 @@ public class EventMeBot extends TelegramLongPollingBot{
                     SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
                     executeMessage(message);
                 }
-            } else if (message_text.equals("/notattending")) {
+            } else if (message_text.equals("/notattending") || message_text.equals("/notattending@EventMeBot")) {
                 if (!eventName.equals("")) {
                     if (!nonAttendees.contains(username)) {
                         attendees.remove(username);
@@ -73,7 +85,7 @@ public class EventMeBot extends TelegramLongPollingBot{
                     SendMessage message = createNewSendMessage(chat_id, FormatPrinter.MESSAGE_EVENT_NOT_CREATED);
                     executeMessage(message);
                 }
-            } else if (message_text.equals("/maybeattending")) {
+            } else if (message_text.equals("/maybeattending") || message_text.equals("/maybeattending@EventMeBot")) {
                 if (!eventName.equals("")) {
                     if (!maybeAttendees.contains(username)) {
                         attendees.remove(username);
